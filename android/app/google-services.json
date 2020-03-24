@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "670779997628",
+    "firebase_url": "https://water-bill-management-374d3.firebaseio.com",
+    "project_id": "water-bill-management-374d3",
+    "storage_bucket": "water-bill-management-374d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670779997628:android:b216790757d5cd35043fb9",
+        "android_client_info": {
+          "package_name": "com.reethusnest.water_bill_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670779997628-uepussmd4rvmb61sdrj3r8460sf92qj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVBnCJEGgZAFZ9cfk_cZN_6I3tbyoaq6o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670779997628-uepussmd4rvmb61sdrj3r8460sf92qj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
