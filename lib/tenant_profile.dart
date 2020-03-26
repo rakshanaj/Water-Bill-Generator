@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class TenanatProfile extends StatefulWidget {
@@ -7,12 +8,24 @@ class TenanatProfile extends StatefulWidget {
 
 class _TenanatProfileState extends State<TenanatProfile> {
   final _formkey = GlobalKey<FormState>();
+  final Firestore _firestore = Firestore.instance;
 
   String house, name;
   int phone, year, month;
 
-  void _setTenantDetails(
-      String house, String name, int phone, int month, int year) async {}
+  void _setTenantDetails(String house, String name, int phone, int month,
+      int year) async {
+    print('$house, $name, $phone, $month, $year');
+
+    await _firestore.collection('tenants').document(house).setData({
+      'name': name,
+      'phone': phone,
+      'month': month,
+      'year': year,
+    });
+
+    print('sent to firebase');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +40,9 @@ class _TenanatProfileState extends State<TenanatProfile> {
         // in the middle of the parent.
         child: Form(
           key: _formkey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
             children: <Widget>[
+
               Container(
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
                 child: TextFormField(
@@ -54,7 +67,11 @@ class _TenanatProfileState extends State<TenanatProfile> {
                 child: TextFormField(
                   validator: (val) {
                     name = val;
-                    return null;
+                    if (val.length == 0) {
+                      return 'enter name';
+                    }
+                    else
+                      return null;
                   },
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -89,7 +106,7 @@ class _TenanatProfileState extends State<TenanatProfile> {
                 child: TextFormField(
                   validator: (val) {
                     month = int.parse(val);
-                    if (val.length != 2)
+                    if (val.length != 2 && month > 0 && month < 13)
                       return 'Invalid month';
                     else
                       return null;
@@ -122,10 +139,24 @@ class _TenanatProfileState extends State<TenanatProfile> {
                   ),
                 ),
               ),
+
+              SizedBox(height: 20,),
+
               RaisedButton(
                 onPressed: () {
-                  _setTenantDetails(house, name, phone, month, year);
+                  try {
+                    if (_formkey.currentState.validate()) {
+//                    Scaffold.of(context).showSnackBar(
+//                      SnackBar(content: Text('Adding data'),)
+//                    );
+                      _setTenantDetails(house, name, phone, month, year);
+                    }
+                  }
+                  catch (e) {
+                    print('form error');
+                  }
                 },
+                child: Text('Submit'),
               ),
             ],
           ),
