@@ -18,6 +18,7 @@ class _TenanatProfileState extends State<TenanatProfile> {
     print('$house, $name, $phone, $month, $year');
 
     await _firestore.collection('tenants').document(house).setData({
+      'house': house,
       'name': name,
       'phone': phone,
       'month': month,

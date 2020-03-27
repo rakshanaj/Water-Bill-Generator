@@ -6,11 +6,12 @@ class BillGeneration extends StatefulWidget {
   _BillGenerationState createState() => _BillGenerationState();
 }
 
+
 class _BillGenerationState extends State<BillGeneration> {
 
   final Firestore _firestore = Firestore.instance;
   String house;
-  int currentReading;
+  int currentReading, phone;
   int current_year = DateTime
       .now()
       .year;
@@ -30,6 +31,19 @@ class _BillGenerationState extends State<BillGeneration> {
           .day,
     });
     print('added!');
+
+    await _firestore.collection('tenants').getDocuments().then((
+        QuerySnapshot snapshot) {
+      snapshot.documents.forEach((f) {
+        //print('f is ${f.data}');
+        if (f.data['house'] == house) {
+          phone = f.data['phone'];
+        }
+      });
+    });
+
+    phone = 910000000000 + phone;
+    print('phone for $house is $phone');
   }
 
   @override
