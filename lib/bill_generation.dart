@@ -11,9 +11,25 @@ class _BillGenerationState extends State<BillGeneration> {
   final Firestore _firestore = Firestore.instance;
   String house;
   int currentReading;
+  int current_year = DateTime
+      .now()
+      .year;
+  int current_month = DateTime
+      .now()
+      .month;
 
-  void _generateBill(String house, int currentReading) {
-
+  void _generateBill(String house, int currentReading) async {
+    await _firestore.collection('readings')
+        .document('$current_year')
+        .collection('$current_month')
+        .document(house)
+        .setData({
+      'current': currentReading,
+      'day': DateTime
+          .now()
+          .day,
+    });
+    print('added!');
   }
 
   @override
