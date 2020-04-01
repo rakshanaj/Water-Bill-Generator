@@ -9,6 +9,9 @@ class PreviousList extends StatefulWidget {
 }
 
 class _PreviousListState extends State<PreviousList> {
+
+  int selectedYear;
+
   final Firestore _firestore = Firestore.instance;
   String x;
 
@@ -32,7 +35,7 @@ class _PreviousListState extends State<PreviousList> {
   List<Widget> _buildCells(int count, bool isHouse) {
     return List.generate(
       count,
-      (index) => Container(
+          (index) => Container(
         alignment: Alignment.center,
         width: 120.0,
         height: 60.0,
@@ -40,37 +43,65 @@ class _PreviousListState extends State<PreviousList> {
         margin: EdgeInsets.all(4.0),
         child: isHouse
             ? index == 0
-                ? Text(
-                    'House number',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      //fontStyle: FontStyle.italic,
-                    ),
-                  )
-                : index < 3
-                    ? Text('f$index')
-                    : index > 5 ? Text('t${index - 5}') : Text('s${index - 2}')
-            : Text('${_getValue('f1', '3', '2020')}'),
+            ? Text(
+          'House number',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            //fontStyle: FontStyle.italic,
+          ),
+        )
+            : index < 3
+            ? Text('f$index')
+            : index > 5 ? Text('t${index - 5}') : Text('s${index - 2}')
+            : Text('bruh what'),
+        //: Text('${_getValue('f1', '3', '2020')}'),
       ),
     );
   }
 
-  List<Widget> _buildRows(int count) {
-    return List.generate(
-      count,
-      (index) => Row(
-        children: _buildCells(10, false),
-      ),
-    );
-  }
 
-  List<Widget> _buildColumns(int count) {
-    return List.generate(
-        count,
-        (index) => Column(
-              children: _buildCells(9, false),
-            ));
+  Widget _buildData(String month, String year, String house) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore.collection('readings')
+          .document(year)
+          .collection(month)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final houses = snapshot.data.documents;
+          List<MonthReads> monthlyreadings = [];
+          for (var h in houses) {
+            if (h.data['house'] == house) {
+              final fbHouse = h.data['house'];
+              final fbCurrent = h.data['current'];
+
+              final box = MonthReads(
+                month: month,
+                year: year,
+                house: fbHouse,
+                current: fbCurrent,
+              );
+              monthlyreadings.add(box);
+            }
+            else {
+              final box = MonthReads(
+                month: month,
+                year: year,
+                house: house,
+                current: 0,
+              );
+              monthlyreadings.add(box);
+            }
+          }
+
+          return Column(
+            children: monthlyreadings,
+          );
+        }
+        return Text('not yet bro');
+      },
+    );
   }
 
   @override
@@ -79,8 +110,40 @@ class _PreviousListState extends State<PreviousList> {
       appBar: AppBar(
         title: Text('Previous readings'),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 2,
+                margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      selectedYear = int.parse(value);
+                    });
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.date_range),
+                    labelText: 'Year',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              RaisedButton(
+                onPressed: () {
+
+                },
+
+                child: Text('Year'),
+              ),
+            ],
+          ),
           //_headers(10, 10),
           SingleChildScrollView(
             child: Row(
@@ -95,8 +158,9 @@ class _PreviousListState extends State<PreviousList> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      //children: _buildRows(9),
-                      children: _buildColumns(8),
+                      children: <Widget>[
+                        _buildData('3', '2020', 'f1'),
+                      ],
                     ),
                   ),
                 )
@@ -108,3 +172,26 @@ class _PreviousListState extends State<PreviousList> {
     );
   }
 }
+
+class MonthReads extends StatelessWidget {
+
+  final String month;
+  final String year;
+  final int current;
+  final String house;
+
+  MonthReads({this.house, this.year, this.month, this.current});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      width: 120.0,
+      height: 60.0,
+      color: Colors.white,
+      margin: EdgeInsets.all(4.0),
+      child: Text('$current'),
+    );
+  }
+}
+
