@@ -26,9 +26,6 @@ class _BillGenerationState extends State<BillGeneration> {
   int previousReadingYear = DateTime
       .now()
       .year;
-  int previousReadingMonth = DateTime
-      .now()
-      .month - 1;
 
   //to display current month as default month of reading
   TextEditingController defaultMonth = TextEditingController()
@@ -44,11 +41,36 @@ class _BillGenerationState extends State<BillGeneration> {
   //this function adds current reading to db and retrieves phone number
 
   void _generateBill(String house, int currentReading, String monthOfReading,
+      int previousReadingMonth,
       String yearOfReading) async {
+    //this if statement makes sure that the previous reading is in the previous month even when years change
+    if (previousReadingMonth == 0) {
+      setState(() {
+        previousReadingMonth = 12;
+        previousReadingYear = currentYear - 1;
+      });
+    }
+    else {
+      setState(() {
+        previousReadingMonth = int.parse(monthOfReading) - 1;
+        previousReadingYear = int.parse(yearOfReading);
+      });
+    }
+
+    print(
+        'prevYear is $previousReadingYear and prevMonth is $previousReadingMonth');
+
+
 //    print(
 //        ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading');
 
     //adding current reading to db
+
+    setState(() {
+      bill = 0;
+      previousReading = 0;
+    });
+
     if (house != null && currentReading != null && monthOfReading != null &&
         yearOfReading != null) {
       await _firestore.collection('readings')
@@ -67,22 +89,6 @@ class _BillGenerationState extends State<BillGeneration> {
 
       //retrieving previous reading from db
 
-      //this if statement makes sure that the previous reading is in the previous month even when years change
-      if (previousReadingMonth == 0) {
-        setState(() {
-          previousReadingMonth = 12;
-          previousReadingYear = currentYear - 1;
-        });
-      }
-      else {
-        setState(() {
-          previousReadingMonth = int.parse(monthOfReading) - 1;
-          previousReadingYear = int.parse(yearOfReading);
-        });
-      }
-
-      print(
-          'prevYear is $previousReadingYear and prevMonth is $previousReadingMonth');
 
       await _firestore.collection('readings')
           .document('$previousReadingYear')
@@ -93,7 +99,7 @@ class _BillGenerationState extends State<BillGeneration> {
             previousReading = f.data['current'];
           }
         });
-    });
+      });
       if (previousReading == null) {
         setState(() {
           previousReading = 0;
@@ -239,9 +245,11 @@ class _BillGenerationState extends State<BillGeneration> {
             RaisedButton(
               onPressed: () {
                 print(
-                    ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading');
+                    ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading with prevreadingMonth as ${int
+                        .parse(monthOfReading) - 1}');
                 _generateBill(
-                    house, currentReading, monthOfReading, yearOfReading);
+                    house, currentReading, monthOfReading,
+                    int.parse(monthOfReading) - 1, yearOfReading);
               },
               child: Text('Generate bill'),
             ),
