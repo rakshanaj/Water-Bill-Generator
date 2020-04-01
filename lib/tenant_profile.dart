@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class TenanatProfile extends StatefulWidget {
+class TenentProfile extends StatefulWidget {
   @override
-  _TenanatProfileState createState() => _TenanatProfileState();
+  _TenentProfileState createState() => _TenentProfileState();
 }
 
-class _TenanatProfileState extends State<TenanatProfile> {
+class _TenentProfileState extends State<TenentProfile> {
   final _formkey = GlobalKey<FormState>();
   final Firestore _firestore = Firestore.instance;
 

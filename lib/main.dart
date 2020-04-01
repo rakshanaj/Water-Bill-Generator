@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:water_bill_manager/bill_generation.dart';
+import 'package:water_bill_manager/previous_list.dart';
 import 'package:water_bill_manager/tenant_profile.dart';
 
 void main() => runApp(MyApp());
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/billGeneration': (context) => BillGeneration(),
-        '/tenant': (context) => TenanatProfile(),
+        '/tenant': (context) => TenentProfile(),
+        '/previousList': (context) => PreviousList(),
       },
       home: MyHomePage(title: 'Water Bill Manager'),
     );
@@ -66,26 +68,31 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              child: Text('Generate bill'),
+              child: Text('Generate bill for this month'),
               onPressed: () {
                 Navigator.pushNamed(context, '/billGeneration');
               },
             ),
             RaisedButton(
-              child: Text('Tenant'),
+              child: Text('Tenant Details'),
               onPressed: () {
                 Navigator.pushNamed(context, '/tenant');
+              },
+            ),
+
+            RaisedButton(
+              child: Text('View previous readings'),
+              onPressed: () {
+                Navigator.pushNamed(context, '/previousList');
               },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await testFirebase();
-        },
+        onPressed: () {},
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
