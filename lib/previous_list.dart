@@ -10,10 +10,17 @@ class PreviousList extends StatefulWidget {
 
 class _PreviousListState extends State<PreviousList> {
 
+  @override
+  void initState() {
+    super.initState();
+    y = 0;
+  }
+
   int selectedYear;
 
   final Firestore _firestore = Firestore.instance;
   String x;
+  int y;
 
   Future<String> _getValue(String house, String month, String year) async {
     await _firestore
@@ -35,35 +42,36 @@ class _PreviousListState extends State<PreviousList> {
   List<Widget> _buildCells(int count, bool isHouse) {
     return List.generate(
       count,
-          (index) => Container(
-        alignment: Alignment.center,
-        width: 120.0,
-        height: 60.0,
-        color: Colors.white,
-        margin: EdgeInsets.all(4.0),
-        child: isHouse
-            ? index == 0
-            ? Text(
-          'House number',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            //fontStyle: FontStyle.italic,
+          (index) =>
+          Container(
+            alignment: Alignment.center,
+            width: 120.0,
+            height: 60.0,
+            color: Colors.white,
+            margin: EdgeInsets.all(4.0),
+            child: isHouse
+                ? index == 0
+                ? Text(
+              'House number',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                //fontStyle: FontStyle.italic,
+              ),
+            )
+                : index < 3
+                ? Text('f$index')
+                : index > 5 ? Text('t${index - 5}') : Text('s${index - 2}')
+                : Text('bruh what'),
+            //: Text('${_getValue('f1', '3', '2020')}'),
           ),
-        )
-            : index < 3
-            ? Text('f$index')
-            : index > 5 ? Text('t${index - 5}') : Text('s${index - 2}')
-            : Text('bruh what'),
-        //: Text('${_getValue('f1', '3', '2020')}'),
-      ),
     );
   }
 
-
   Widget _buildData(String month, String year, String house) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('readings')
+      stream: _firestore
+          .collection('readings')
           .document(year)
           .collection(month)
           .snapshots(),
@@ -71,6 +79,16 @@ class _PreviousListState extends State<PreviousList> {
         if (snapshot.hasData) {
           final houses = snapshot.data.documents;
           List<MonthReads> monthlyreadings = [];
+          print('y is $y');
+          if (y == 0) {
+            monthlyreadings.add(MonthReads(
+              house: house,
+              month: month,
+              year: year,
+              current: int.parse(month),
+            ));
+            y++;
+          }
           for (var h in houses) {
             if (h.data['house'] == house) {
               final fbHouse = h.data['house'];
@@ -82,20 +100,23 @@ class _PreviousListState extends State<PreviousList> {
                 house: fbHouse,
                 current: fbCurrent,
               );
+
               monthlyreadings.add(box);
             }
-            else {
-              final box = MonthReads(
-                month: month,
-                year: year,
-                house: house,
-                current: 0,
-              );
-              monthlyreadings.add(box);
-            }
+//            else if(house == 's2'){
+//              final box = MonthReads(
+//                month: month,
+//                year: year,
+//                house: house,
+//                current: 0,
+//              );
+//
+//              monthlyreadings.add(box);
+//            }
           }
 
           return Column(
+
             children: monthlyreadings,
           );
         }
@@ -136,10 +157,7 @@ class _PreviousListState extends State<PreviousList> {
                 ),
               ),
               RaisedButton(
-                onPressed: () {
-
-                },
-
+                onPressed: () {},
                 child: Text('Year'),
               ),
             ],
@@ -156,10 +174,17 @@ class _PreviousListState extends State<PreviousList> {
                 Flexible(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Row(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         _buildData('3', '2020', 'f1'),
+                        _buildData('3', '2020', 'f2'),
+                        _buildData('3', '2020', 's1'),
+                        _buildData('3', '2020', 's2'),
+                        _buildData('3', '2020', 's3'),
+                        _buildData('3', '2020', 't1'),
+                        _buildData('3', '2020', 't2'),
+                        _buildData('3', '2020', 't3'),
                       ],
                     ),
                   ),
@@ -174,7 +199,6 @@ class _PreviousListState extends State<PreviousList> {
 }
 
 class MonthReads extends StatelessWidget {
-
   final String month;
   final String year;
   final int current;
@@ -194,4 +218,3 @@ class MonthReads extends StatelessWidget {
     );
   }
 }
-
