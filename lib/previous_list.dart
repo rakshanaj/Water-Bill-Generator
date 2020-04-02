@@ -125,75 +125,50 @@ class _PreviousListState extends State<PreviousList> {
     );
   }
 
+  Widget _buildBody(BuildContext context) {
+    int year = 2020,
+        month = 3;
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('readings')
+          .document('$year')
+          .collection('$month')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+        return DataTable(
+          columns: [
+            DataColumn(label: Text('House Number')),
+            DataColumn(label: Text('month $month')),
+          ],
+          rows: _buildList(context, snapshot.data.documents),
+        );
+      },
+    );
+  }
+
+  List<DataRow> _buildList(BuildContext context,
+      List<DocumentSnapshot> snapshot) {
+    return snapshot.map((data) => _buildListItem(context, data)).toList();
+  }
+
+  DataRow _buildListItem(BuildContext context, DocumentSnapshot data) {
+    final record = Record.fromSnapshot(data);
+
+    return DataRow(
+        cells: [
+          DataCell(Text(record.house)),
+          DataCell(Text('${record.current}')),
+        ]
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Previous readings'),
       ),
-      body: ListView(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 2,
-                margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      selectedYear = int.parse(value);
-                    });
-                  },
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.date_range),
-                    labelText: 'Year',
-                    border: new OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                ),
-              ),
-              RaisedButton(
-                onPressed: () {},
-                child: Text('Year'),
-              ),
-            ],
-          ),
-          //_headers(10, 10),
-          SingleChildScrollView(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _buildCells(9, true),
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _buildData('3', '2020', 'f1'),
-                        _buildData('3', '2020', 'f2'),
-                        _buildData('3', '2020', 's1'),
-                        _buildData('3', '2020', 's2'),
-                        _buildData('3', '2020', 's3'),
-                        _buildData('3', '2020', 't1'),
-                        _buildData('3', '2020', 't2'),
-                        _buildData('3', '2020', 't3'),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _buildBody(context),
     );
   }
 }
@@ -217,4 +192,25 @@ class MonthReads extends StatelessWidget {
       child: Text('$current'),
     );
   }
+}
+
+
+class Record {
+  final String house;
+  final int day, current, bill;
+  final DocumentReference reference;
+
+  Record.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['house'] != null),
+        assert(map['current'] != null),
+        assert(map['bill'] != null),
+        assert(map['day'] != null),
+        house = map['house'],
+        current = map['current'],
+        day = map['day'],
+        bill = map['bill'];
+
+  Record.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
 }
