@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class BillGeneration extends StatefulWidget {
   @override
   _BillGenerationState createState() => _BillGenerationState();
 }
 
-
 class _BillGenerationState extends State<BillGeneration> {
-
   final Firestore _firestore = Firestore.instance;
-  String house;
+  String house, text;
+
   int currentReading, previousReading;
   String monthOfReading = '${DateTime
       .now()
@@ -37,20 +37,17 @@ class _BillGenerationState extends State<BillGeneration> {
         .now()
         .year}';
 
-
   //this function adds current reading to db and retrieves phone number
 
   void _generateBill(String house, int currentReading, String monthOfReading,
-      int previousReadingMonth,
-      String yearOfReading) async {
+      int previousReadingMonth, String yearOfReading) async {
     //this if statement makes sure that the previous reading is in the previous month even when years change
     if (previousReadingMonth == 0) {
       setState(() {
         previousReadingMonth = 12;
         previousReadingYear = currentYear - 1;
       });
-    }
-    else {
+    } else {
       setState(() {
         previousReadingMonth = int.parse(monthOfReading) - 1;
         previousReadingYear = int.parse(yearOfReading);
@@ -59,7 +56,6 @@ class _BillGenerationState extends State<BillGeneration> {
 
     print(
         'prevYear is $previousReadingYear and prevMonth is $previousReadingMonth');
-
 
 //    print(
 //        ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading');
@@ -71,9 +67,12 @@ class _BillGenerationState extends State<BillGeneration> {
       previousReading = 0;
     });
 
-    if (house != null && currentReading != null && monthOfReading != null &&
+    if (house != null &&
+        currentReading != null &&
+        monthOfReading != null &&
         yearOfReading != null) {
-      await _firestore.collection('readings')
+      await _firestore
+          .collection('readings')
           .document('$yearOfReading')
           .collection('$monthOfReading')
           .document(house)
@@ -89,11 +88,12 @@ class _BillGenerationState extends State<BillGeneration> {
 
       //retrieving previous reading from db
 
-
-      await _firestore.collection('readings')
+      await _firestore
+          .collection('readings')
           .document('$previousReadingYear')
           .collection('$previousReadingMonth')
-          .getDocuments().then((QuerySnapshot snapshot) {
+          .getDocuments()
+          .then((QuerySnapshot snapshot) {
         snapshot.documents.forEach((f) {
           if (f.data['house'] == house) {
             previousReading = f.data['current'];
@@ -113,7 +113,8 @@ class _BillGenerationState extends State<BillGeneration> {
         bill = currentReading - previousReading;
       });
 
-      await _firestore.collection('readings')
+      await _firestore
+          .collection('readings')
           .document('$yearOfReading')
           .collection('$monthOfReading')
           .document(house)
@@ -174,7 +175,6 @@ class _BillGenerationState extends State<BillGeneration> {
                 ),
               ),
             ),
-
             Container(
               margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
               child: TextField(
@@ -192,7 +192,6 @@ class _BillGenerationState extends State<BillGeneration> {
                 ),
               ),
             ),
-
             Container(
               margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
               child: TextField(
@@ -203,25 +202,13 @@ class _BillGenerationState extends State<BillGeneration> {
                   });
                 },
                 decoration: InputDecoration(
-                  //icon:Icon(Icons.add,),
-//                    suffix: IconButton(
-//                      onPressed: (){
-//                        print('icon pressed and onthofReading is $monthOfReading');
-//                        setState(() {
-//                          defaultMonth.text=(int.parse(monthOfReading)+1).toString();
-//                        });
-//                      },
-//                      icon:Icon(Icons.add,),
-//                    ),
                   labelText: 'Month of reading',
                   border: new OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-
               ),
             ),
-
             Container(
               margin: EdgeInsets.fromLTRB(30, 20, 30, 0),
               child: TextField(
@@ -239,23 +226,98 @@ class _BillGenerationState extends State<BillGeneration> {
                 ),
               ),
             ),
-
             SizedBox(height: 20),
-
-            RaisedButton(
-              onPressed: () {
-                print(
-                    ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading with prevreadingMonth as ${int
-                        .parse(monthOfReading) - 1}');
-                _generateBill(
-                    house, currentReading, monthOfReading,
-                    int.parse(monthOfReading) - 1, yearOfReading);
-              },
-              child: Text('Generate bill'),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 100),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(30.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.topRight,
+                      // 10% of the width, so there are ten blinds.
+                      colors: [
+                        Colors.blueAccent.shade400,
+                        Colors.blue.shade300
+                      ],
+                      tileMode: TileMode.repeated,
+                    ),
+                  ),
+                  child: MaterialButton(
+                    onPressed: () {
+                      print(
+                          ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading with prevreadingMonth as ${int
+                              .parse(monthOfReading) - 1}');
+                      _generateBill(house, currentReading, monthOfReading,
+                          int.parse(monthOfReading) - 1, yearOfReading);
+                    },
+                    height: 42.0,
+                    child: Text('Generate bill'),
+                  ),
+                ),
+              ),
             ),
+            Center(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(50, 20, 50, 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(40),
+                  border: Border.all(),
+                ),
+                margin: EdgeInsets.all(30),
+                child: Text(
+                  'Bill is $bill',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 100),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(30.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.topRight,
+                      // 10% of the width, so there are ten blinds.
+                      colors: [
+                        Colors.blueAccent.shade400,
+                        Colors.blue.shade300
+                      ],
+                      tileMode: TileMode.repeated,
+                    ),
+                  ),
+                  child: MaterialButton(
 
-            Text('bill is $bill'),
-
+                    onPressed: () {
+                      text = '''$monthOfReading - ${house.toUpperCase()}
+                          *Water bill reading*
+                          Current reading  : $currentReading
+                          Previous reading : $previousReading
+                         
+                          _*Bill Amount    : Rs. $bill*_''';
+                      print(
+                          ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading with prevreadingMonth as ${int
+                              .parse(monthOfReading) - 1}');
+                      Share.share(text);
+                    },
+                    height: 42.0,
+                    child: Text(
+                      'Send Bill',
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

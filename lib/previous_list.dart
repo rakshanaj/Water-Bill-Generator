@@ -14,43 +14,45 @@ class _PreviousListState extends State<PreviousList> {
 
 
   Widget _buildBody(BuildContext context) {
-    int year = 2020,
-        month = 3;
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('readings')
-          .document('$year')
-          .collection('$month')
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return DataTable(
-          columns: _columnList(),
-          rows: _buildList(context, snapshot.data.documents),
-        );
-      },
-    );
+    int year = 2020;
+    for (var month = 1; month < 13; month++) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('readings')
+            .document('$year')
+            .collection('$month')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return DataTable(
+            columns: _columnList(),
+            //rows: _buildList(context, snapshot.data.documents),
+            rows: _rowList(),
+          );
+        },
+      );
+    }
   }
 
 
   List<DataColumn> _columnList() {
     List months = [
-      'Jan',
-      'Feb',
-      'MArch',
+      'January',
+      'February',
+      'March',
       'April',
-      'may',
+      'May',
       'June',
       'July',
-      'Aug',
-      'Sept',
-      'Oct',
+      'August',
+      'September',
+      'October',
       'November',
       'December'
     ];
 
     List<DataColumn> list = [];
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 11; i++) {
       if (i == 0) {
         list.add(DataColumn(
             label: Text('house')
@@ -63,6 +65,22 @@ class _PreviousListState extends State<PreviousList> {
       }
     }
     return list;
+  }
+
+  List<DataRow> _rowList() {
+    List<DataRow> list = [];
+    List<DataCell> cells = [];
+    for (var i = 1; i < 8
+    ; i++) {
+      cells = [];
+      cells.add(
+          DataCell(Text('Hx'))
+      );
+      for (var j = 1; j < 12; j++) {
+        cells.add(DataCell(Text('value')));
+      }
+      list.add(DataRow(cells: cells));
+    }
   }
 
   List<DataRow> _buildList(BuildContext context,
@@ -80,6 +98,7 @@ class _PreviousListState extends State<PreviousList> {
         ]
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,6 +143,7 @@ class Record {
         assert(map['bill'] != null),
         assert(map['day'] != null),
         house = map['house'],
+
         current = map['current'],
         day = map['day'],
         bill = map['bill'];
