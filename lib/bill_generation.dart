@@ -295,16 +295,18 @@ class _BillGenerationState extends State<BillGeneration> {
                       ],
                       tileMode: TileMode.repeated,
                     ),
+
+
                   ),
                   child: MaterialButton(
 
                     onPressed: () {
                       text = '''$monthOfReading - ${house.toUpperCase()}
-                          *Water bill reading*
-                          Current reading  : $currentReading
-                          Previous reading : $previousReading
+                      *Water bill reading*
+                      Current reading  : $currentReading
+                      Previous reading : $previousReading
                          
-                          _*Bill Amount    : Rs. $bill*_''';
+                       _*Bill Amount    : Rs. $bill*_''';
                       print(
                           ' for $house, currReading is $currentReading, for month $monthOfReading, and year $yearOfReading with prevreadingMonth as ${int
                               .parse(monthOfReading) - 1}');

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:water_bill_manager/bill_generation.dart';
 import 'package:water_bill_manager/previous_list.dart';
+import 'package:water_bill_manager/previous_readings.dart';
 import 'package:water_bill_manager/tenant_profile.dart';
 
 void main() => runApp(MyApp());
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
         '/billGeneration': (context) => BillGeneration(),
         '/tenant': (context) => TenentProfile(),
         '/previousList': (context) => PreviousList(),
+        '/previousReadings': (context) => PreviousReadings(),
       },
       home: MyHomePage(title: 'Water Bill Manager'),
     );
@@ -76,6 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('View previous readings'),
               onPressed: () {
                 Navigator.pushNamed(context, '/previousList');
+              },
+            ),
+
+            RaisedButton(
+              child: Text('test for prev readings'),
+              onPressed: () {
+                Navigator.pushNamed(context, '/previousReadings');
               },
             ),
           ],
