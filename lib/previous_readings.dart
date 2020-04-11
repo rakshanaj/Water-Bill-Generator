@@ -27,8 +27,8 @@ class _PreviousReadingsState extends State<PreviousReadings>
       child: Stack(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(
-                top: 32, left: 8, right: 8, bottom: 8),
+            padding:
+            const EdgeInsets.only(top: 32, left: 8, right: 8, bottom: 8),
             child: Container(
               decoration: BoxDecoration(
                 boxShadow: <BoxShadow>[
@@ -38,9 +38,7 @@ class _PreviousReadingsState extends State<PreviousReadings>
                       blurRadius: 8.0),
                 ],
                 gradient: LinearGradient(
-                  colors: [
-                    color1, color2
-                  ],
+                  colors: [color1, color2],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -74,12 +72,10 @@ class _PreviousReadingsState extends State<PreviousReadings>
                       ),
                       Expanded(
                         child: Padding(
-                          padding:
-                          const EdgeInsets.only(top: 8, bottom: 8),
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 text2,
@@ -178,9 +174,8 @@ class _PreviousReadingsState extends State<PreviousReadings>
           children: <Widget>[
             Row(
               children: <Widget>[
-                _boxes(
-                    'assets/images/f.png', 'F1', 'xyz', Colors.brown.shade700,
-                    Colors.brown.shade300),
+                _boxes('assets/images/f.png', 'F1', 'xyz',
+                    Colors.brown.shade700, Colors.brown.shade300),
                 _boxes('assets/images/f.png', 'F2', 'Roshan',
                     Colors.brown.shade700, Colors.brown.shade300),
               ],
@@ -189,23 +184,20 @@ class _PreviousReadingsState extends State<PreviousReadings>
               children: <Widget>[
                 _boxes('assets/images/s.png', 'S1', 'Gowtham',
                     Colors.blue.shade900, Colors.lightBlueAccent.shade400),
-                _boxes(
-                    'assets/images/s.png', 'S2', 'Shane', Colors.blue.shade900,
-                    Colors.lightBlueAccent.shade400),
+                _boxes('assets/images/s.png', 'S2', 'Shane',
+                    Colors.blue.shade900, Colors.lightBlueAccent.shade400),
                 _boxes('assets/images/s.png', 'S3', 'Sathish',
                     Colors.blue.shade900, Colors.lightBlueAccent.shade400),
               ],
             ),
             Row(
               children: <Widget>[
-                _boxes(
-                    'assets/images/t.png', 'T1', 'Ankit', Colors.red.shade900,
-                    Colors.red.shade200),
-                _boxes(
-                    'assets/images/t.png', 'T1', 'Shastri', Colors.red.shade900,
-                    Colors.red.shade200),
-                _boxes('assets/images/t.png', 'T1', 'boys', Colors.red.shade900,
-                    Colors.red.shade200),
+                _boxes('assets/images/t.png', 'T1', 'Ankit',
+                    Colors.red.shade900, Colors.red.shade200),
+                _boxes('assets/images/t.png', 'T2', 'Shastri',
+                    Colors.red.shade900, Colors.red.shade200),
+                _boxes('assets/images/t.png', 'T3', 'boys',
+                    Colors.red.shade900, Colors.red.shade200),
               ],
             ),
           ],
